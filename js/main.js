@@ -19,7 +19,7 @@ var counter = (function () {
     }
     return count++;
   };
-}());
+})();
 
 console.log(counter()); // 0
 
@@ -74,7 +74,7 @@ var counting = (function () {
       count--;
     }
   };
-}());
+})();
 
 console.log(counting.value()); // 0
 
@@ -120,9 +120,26 @@ console.log(counting.value());
  * console.log(myPow(2, 3, myPrint)); // 2^3=8
  */
 
-//  console.log(myPow(3, 4, myPrint)); // 3^4=81
+var myPrint = function (a, b, res) {
+  return `${a}^${b}=${res}`;
+}
 
-// console.log(myPow(2, 3, myPrint)); // 2^3=8
+var myPow = function (a, b, callback) {
+  var pow = function (x, n) {
+    if (n !== 1) {
+      return x *= pow(x, n - 1);
+    } else {
+      return x;
+    }
+  };
+  return callback(a, b, pow(a, b));
+};
+
+console.log(myPow(3, 4, myPrint)); // 3^4=81
+
+console.log(myPow(2, 3, myPrint)); // 2^3=8
+
+console.log(myPow(4, 5, myPrint));
 
 /*
  * #4
@@ -154,23 +171,63 @@ console.log(counting.value());
  * - если сеттеру used присвоено значение 'used', ничего делать не нужно
  */
 
-// let yearNow = new Date().getFullYear(); // получить текущий год как число
+var getInfo = function () {
+  return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
+};
 
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2010, used
+let yearNow = new Date().getFullYear(); // получить текущий год как число
 
-// car.used = 'new';
+var car = {
+  engine: 1600,
+  model: 'Aveo',
+  name: 'Chevrolet',
+  year: 2008,
+  info: getInfo,
+  get used() {
+    return this.year !== yearNow ? 'used' : 'new';
+  },
+  set used(value) {
+    if (value === 'new' && this.year < yearNow) {
+      this.year = yearNow;
+    }
+  }
+};
 
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2019, new -- год изменен
+var car2 = {
+  engine: 2500,
+  model: 'Camry',
+  name: 'Toyota',
+  year: 2022,
+  info: getInfo,
+  get used() {
+    return this.year !== yearNow ? 'used' : 'new';
+  },
+  set used(value) {
+    if (value === 'new' && this.year < yearNow) {
+      this.year = yearNow;
+    }
+  }
+};
 
-// car.used = 'used';
+console.log(car.info()); // Chevrolet Aveo, 1600cc, year 2008, used
 
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2019, new -- изменения не выполняются
+car.used = 'new';
 
-// console.log(car2.info()); // Infinite FX50 AWD, 5000cc, year 2019, new
+console.log(car.info()); // Chevrolet Aveo, 1600cc, year 2023, new -- год изменен
 
-// car.used = 'used';
+car.used = 'used';
 
-// console.log(car2.info()); // Infinite FX50 AWD, 5000cc, year 2019, new -- изменения не выполняются
+console.log(car.info()); // Chevrolet Aveo, 1600cc, year 2023, new -- изменения не выполняются
+
+console.log(car2.info()); // Toyota Camry, 2500cc, year 2022, used
+
+car2.used = 'new';
+
+console.log(car2.info()); // Toyota Camry, 2500cc, year 2023, new -- год изменен
+
+car2.used = 'used';
+
+console.log(car2.info()); // Toyota Camry, 2500cc, year 2023, new -- изменения не выполняются
 
 /*
  * #7
